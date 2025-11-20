@@ -189,14 +189,34 @@ function animate() {
 
 
 // ============================================
+// INTERACTION HELPERS
+// ============================================
+function getEventCoords(e) {
+    let x = canvas.width / 2;
+    let y = canvas.height / 2;
+
+    if (e) {
+        if (e.touches && e.touches.length > 0) {
+            x = e.touches[0].clientX;
+            y = e.touches[0].clientY;
+        } else if (typeof e.clientX !== 'undefined' && typeof e.clientY !== 'undefined') {
+            x = e.clientX;
+            y = e.clientY;
+        }
+    }
+    return { x, y };
+}
+
+
+// ============================================
 // MESSAGE REVEAL
 // Shows the hidden message with animation
 // CUSTOMIZE: Modify reveal behavior here
 // ============================================
-function revealMessage() {
+function revealMessage(e) {
     if (isRevealed) {
         // Already revealed - cycle to next message
-        cycleMessage();
+        cycleMessage(e);
         return;
     }
     
@@ -211,9 +231,10 @@ function revealMessage() {
         message.classList.add('revealed');
         subtitle.classList.add('revealed');
         
-        // Create particle burst at center
+        // Create particle burst at click/tap location or center
         if (CONFIG.particles.glowOnReveal) {
-            createParticleBurst(canvas.width / 2, canvas.height / 2);
+            const { x, y } = getEventCoords(e);
+            createParticleBurst(x, y);
         }
     }, CONFIG.animation.revealDelay);
 }
@@ -224,7 +245,7 @@ function revealMessage() {
 // Switches between different messages
 // CUSTOMIZE: Add your own cycle behavior
 // ============================================
-function cycleMessage() {
+function cycleMessage(e) {
     // Move to next message
     CONFIG.currentMessageIndex = (CONFIG.currentMessageIndex + 1) % CONFIG.messages.length;
     const currentMsg = CONFIG.messages[CONFIG.currentMessageIndex];
@@ -240,8 +261,9 @@ function cycleMessage() {
         message.style.opacity = '1';
         subtitle.style.opacity = '1';
         
-        // Create small burst effect
-        createParticleBurst(canvas.width / 2, canvas.height / 2);
+        // Create small burst effect at click/tap location or center
+        const { x, y } = getEventCoords(e);
+        createParticleBurst(x, y);
     }, 300);
 }
 
@@ -252,7 +274,7 @@ function cycleMessage() {
 
 // Click/Tap handler
 function handleInteraction(e) {
-    revealMessage();
+    revealMessage(e);
     
     // Add active state feedback
     container.classList.add('active');
