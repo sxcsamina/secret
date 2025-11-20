@@ -1,34 +1,4 @@
-/*
-═══════════════════════════════════════════════════════════
-  SCRIPT.JS - Interactive Message Page
-  Handles all interactions and animations
-═══════════════════════════════════════════════════════════
-
-  CUSTOMIZATION GUIDE:
-  
-  1. MESSAGE CONTENT (lines 30-40)
-     - Add multiple messages that cycle on click
-     - Customize reveal behavior
-  
-  2. PARTICLE SETTINGS (lines 180-200)
-     - Change particle count, speed, size
-     - Modify colors and behavior
-  
-  3. INTERACTION BEHAVIOR (lines 250-280)
-     - Modify what happens on click/tap
-     - Add custom animations
-  
-  4. TELEGRAM WEBAPP INTEGRATION (lines 300+)
-     - Enable Telegram-specific features
-     - Handle WebApp events
-
-═══════════════════════════════════════════════════════════
-*/
-
-
-// ============================================
-// CONFIGURATION
-// CUSTOMIZE: Change these values
+ZE: Change these values
 // ============================================
 const CONFIG = {
     // Particle settings
@@ -46,24 +16,11 @@ const CONFIG = {
         particleBurstCount: 15  // Extra particles on reveal
     },
     
-    // Alternative messages (cycles through on repeated clicks)
-    // CUSTOMIZE: Add your own messages here
-    messages: [
-        {
-            title: "Hello, World!",
-            subtitle: "Welcome to something special"
-        },
-        {
-            title: "Keep Exploring",
-            subtitle: "There's more to discover"
-        },
-        {
-            title: "Stay Curious",
-            subtitle: "The journey continues"
-        }
-    ],
-    
-    currentMessageIndex: 0
+    // Ripple effect settings
+    ripple: {
+        size: 100,              // Initial ripple size (px)
+        alwaysShow: true        // Show ripple even after message is revealed
+    }
 };
 
 
@@ -138,7 +95,7 @@ class Particle {
 // ============================================
 function setupCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = Math.max(window.innerHeight, document.documentElement.scrollHeight);
 }
 
 
@@ -189,14 +146,36 @@ function animate() {
 
 
 // ============================================
+// RIPPLE EFFECT
+// Creates a ripple animation at click position
+// ============================================
+function createRipple(x, y) {
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.width = `${CONFIG.ripple.size}px`;
+    ripple.style.height = `${CONFIG.ripple.size}px`;
+    ripple.style.marginLeft = `-${CONFIG.ripple.size / 2}px`;
+    ripple.style.marginTop = `-${CONFIG.ripple.size / 2}px`;
+    
+    document.body.appendChild(ripple);
+    
+    // Remove ripple after animation completes
+    setTimeout(() => {
+        ripple.remove();
+    }, 800);
+}
+
+
+// ============================================
 // MESSAGE REVEAL
-// Shows the hidden message with animation
+// Shows the hidden message with animation (only once)
 // CUSTOMIZE: Modify reveal behavior here
 // ============================================
 function revealMessage() {
     if (isRevealed) {
-        // Already revealed - cycle to next message
-        cycleMessage();
+        // Already revealed - do nothing
         return;
     }
     
@@ -213,36 +192,12 @@ function revealMessage() {
         
         // Create particle burst at center
         if (CONFIG.particles.glowOnReveal) {
-            createParticleBurst(canvas.width / 2, canvas.height / 2);
+            createParticleBurst(window.innerWidth / 2, window.innerHeight / 2);
         }
-    }, CONFIG.animation.revealDelay);
-}
-
-
-// ============================================
-// MESSAGE CYCLING
-// Switches between different messages
-// CUSTOMIZE: Add your own cycle behavior
-// ============================================
-function cycleMessage() {
-    // Move to next message
-    CONFIG.currentMessageIndex = (CONFIG.currentMessageIndex + 1) % CONFIG.messages.length;
-    const currentMsg = CONFIG.messages[CONFIG.currentMessageIndex];
-    
-    // Fade out
-    message.style.opacity = '0';
-    subtitle.style.opacity = '0';
-    
-    // Change text and fade back in
-    setTimeout(() => {
-        message.textContent = currentMsg.title;
-        subtitle.textContent = currentMsg.subtitle;
-        message.style.opacity = '1';
-        subtitle.style.opacity = '1';
         
-        // Create small burst effect
-        createParticleBurst(canvas.width / 2, canvas.height / 2);
-    }, 300);
+        // Remove cursor pointer after reveal
+        container.style.cursor = 'default';
+    }, CONFIG.animation.revealDelay);
 }
 
 
@@ -252,13 +207,26 @@ function cycleMessage() {
 
 // Click/Tap handler
 function handleInteraction(e) {
-    revealMessage();
+    // Get click/tap position
+    const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : window.innerWidth / 2);
+    const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : window.innerHeight / 2);
     
-    // Add active state feedback
-    container.classList.add('active');
-    setTimeout(() => {
-        container.classList.remove('active');
-    }, 100);
+    // Always create ripple effect on click
+    createRipple(x, y);
+    
+    // Create particle burst at click position
+    createParticleBurst(x, y);
+    
+    // Reveal message if not already revealed
+    if (!isRevealed) {
+        revealMessage();
+        
+        // Add active state feedback
+        container.classList.add('active');
+        setTimeout(() => {
+            container.classList.remove('active');
+        }, 100);
+    }
 }
 
 // Keyboard support (accessibility)
@@ -272,7 +240,14 @@ function handleKeyPress(e) {
 // Window resize handler
 function handleResize() {
     setupCanvas();
-    initParticles();
+}
+
+// Scroll handler - update canvas height
+function handleScroll() {
+    const newHeight = Math.max(window.innerHeight, document.documentElement.scrollHeight);
+    if (canvas.height !== newHeight) {
+        canvas.height = newHeight;
+    }
 }
 
 
@@ -314,10 +289,11 @@ function init() {
     animate();
     
     // Add event listeners
-    container.addEventListener('click', handleInteraction);
-    container.addEventListener('touchstart', handleInteraction, { passive: true });
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction, { passive: true });
     document.addEventListener('keypress', handleKeyPress);
     window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll);
     
     // Optional: Initialize Telegram WebApp features
     // Uncomment the line below if using Telegram WebApp
@@ -344,11 +320,12 @@ if (document.readyState === 'loading') {
 // Additional helper functions you can use
 // ============================================
 
-// Function to programmatically set a custom message
-// USAGE: setMessage("New Title", "New subtitle text")
-function setMessage(title, subtitleText) {
-    message.textContent = title;
-    subtitle.textContent = subtitleText;
+// Function to manually trigger reveal (if needed)
+// USAGE: triggerReveal()
+function triggerReveal() {
+    if (!isRevealed) {
+        revealMessage();
+    }
 }
 
 // Function to change particle color dynamically
