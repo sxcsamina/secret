@@ -1,17 +1,54 @@
+/*
+═══════════════════════════════════════════════════════════
+  STYLE.CSS - Interactive Message Page
+  Dark Mode Only | Mobile-First | Telegram WebApp Optimized
+═══════════════════════════════════════════════════════════
+
+  CUSTOMIZATION GUIDE:
+  
+  1. COLORS (lines 20-30)
+     - Change background, text, and accent colors
+     - Use HSL format for easy adjustments
+  
+  2. TYPOGRAPHY (lines 90-110)
+     - Change font family (update Google Fonts link in HTML too)
+     - Adjust font sizes for different screen sizes
+  
+  3. ANIMATIONS (lines 250-300)
+     - Modify animation durations and easing
+     - Change reveal effects (fade, scale, etc.)
+  
+  4. SPACING (lines 130-150)
+     - Adjust padding and margins
+     - Control message container size
+
+═══════════════════════════════════════════════════════════
+*/
+
+/* ============================================
+   COLOR VARIABLES
+   CUSTOMIZE: Change these to match your brand
+   ============================================ */
 :root {
+    /* Background - True dark for OLED displays */
     --bg-primary: hsl(0, 0%, 6%);
     
+    /* Text colors */
     --text-primary: hsl(0, 0%, 96%);
     --text-secondary: hsl(0, 0%, 70%);
     --text-muted: hsl(0, 0%, 50%);
     
+    /* Accent color - Blue gradient */
     --accent-primary: hsl(217, 91%, 60%);
     --accent-secondary: hsl(250, 85%, 65%);
     
+    /* Glow effects */
     --glow-color: hsla(217, 91%, 60%, 0.4);
     
+    /* Particle colors */
     --particle-color: rgba(99, 179, 237, 0.6);
     
+    /* Spacing units */
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 1.5rem;
@@ -20,6 +57,9 @@
 }
 
 
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
 * {
     margin: 0;
     padding: 0;
@@ -30,6 +70,7 @@ html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    /* Prevent pull-to-refresh on mobile */
     overscroll-behavior: none;
 }
 
@@ -39,11 +80,16 @@ body {
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent text selection on tap */
     -webkit-tap-highlight-color: transparent;
     user-select: none;
 }
 
 
+/* ============================================
+   MAIN CONTAINER
+   Centers everything on screen
+   ============================================ */
 .container {
     position: relative;
     width: 100%;
@@ -57,6 +103,10 @@ body {
 }
 
 
+/* ============================================
+   PARTICLE CANVAS
+   Background animation layer
+   ============================================ */
 #particleCanvas {
     position: absolute;
     top: 0;
@@ -68,6 +118,10 @@ body {
 }
 
 
+/* ============================================
+   MESSAGE WRAPPER
+   Contains all text elements
+   ============================================ */
 .message-wrapper {
     position: relative;
     z-index: 1;
@@ -78,6 +132,11 @@ body {
 }
 
 
+/* ============================================
+   INSTRUCTION TEXT
+   "Tap to reveal" indicator
+   CUSTOMIZE: Change text size, color, opacity
+   ============================================ */
 .instruction {
     font-size: 1rem;
     font-weight: 400;
@@ -96,7 +155,13 @@ body {
 }
 
 
+/* ============================================
+   MAIN MESSAGE
+   The big central text
+   CUSTOMIZE: Change font size, weight, spacing
+   ============================================ */
 .message {
+    /* Mobile-first sizing */
     font-size: 2.5rem;
     font-weight: 800;
     line-height: 1.2;
@@ -104,37 +169,44 @@ body {
     color: var(--text-primary);
     margin-bottom: var(--spacing-md);
     
+    /* Initial hidden state */
     opacity: 0;
     transform: scale(0.95);
     filter: blur(10px);
     
+    /* Smooth reveal transition */
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
                 filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     
+    /* Gradient text effect */
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
+/* Revealed state */
 .message.revealed {
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
 }
 
+/* Hover effect (desktop) */
 .message.revealed:hover {
     transform: scale(1.02);
     filter: drop-shadow(0 0 20px var(--glow-color));
 }
 
+/* Tablet and up */
 @media (min-width: 768px) {
     .message {
         font-size: 4rem;
     }
 }
 
+/* Desktop and up */
 @media (min-width: 1024px) {
     .message {
         font-size: 5rem;
@@ -142,15 +214,22 @@ body {
 }
 
 
+/* ============================================
+   SUBTITLE
+   Secondary message text
+   CUSTOMIZE: Change appearance or remove
+   ============================================ */
 .subtitle {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.6;
     color: var(--text-secondary);
     
+    /* Initial hidden state */
     opacity: 0;
     transform: translateY(10px);
     
+    /* Delayed reveal */
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s,
                 transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
 }
@@ -167,6 +246,10 @@ body {
 }
 
 
+/* ============================================
+   HINT TEXT
+   Bottom instruction text
+   ============================================ */
 .hint {
     position: absolute;
     bottom: var(--spacing-lg);
@@ -185,6 +268,10 @@ body {
 }
 
 
+/* ============================================
+   PULSE ANIMATION
+   Subtle breathing effect for instruction
+   ============================================ */
 @keyframes pulse {
     0%, 100% {
         opacity: 1;
@@ -203,6 +290,11 @@ body {
 }
 
 
+/* ============================================
+   SHIMMER ANIMATION
+   Optional text shimmer effect
+   CUSTOMIZE: Uncomment to enable
+   ============================================ */
 @keyframes shimmer {
     0% {
         background-position: -200% center;
@@ -212,7 +304,28 @@ body {
     }
 }
 
+/* Uncomment to enable shimmer effect on revealed message */
+/*
+.message.revealed {
+    background: linear-gradient(
+        90deg,
+        var(--accent-primary),
+        var(--accent-secondary),
+        var(--accent-primary)
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+}
+*/
 
+
+/* ============================================
+   ACCESSIBILITY
+   Respect user's motion preferences
+   ============================================ */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -224,12 +337,20 @@ body {
 }
 
 
+/* ============================================
+   TOUCH FEEDBACK
+   Mobile tap effect
+   ============================================ */
 .container.active .message-wrapper {
     transform: scale(0.98);
     transition: transform 0.1s ease;
 }
 
 
+/* ============================================
+   LOADING STATE
+   Optional loading indicator
+   ============================================ */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -244,6 +365,10 @@ body {
 }
 
 
+/* ============================================
+   TELEGRAM WEBAPP SPECIFIC ADJUSTMENTS
+   Safe zones for Telegram UI
+   ============================================ */
 @media (display-mode: standalone) {
     .container {
         padding-top: calc(var(--spacing-md) + env(safe-area-inset-top));
