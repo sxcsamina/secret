@@ -5,79 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Interactive message experience - Tap to reveal">
     
-    <!-- Page Title - CUSTOMIZE THIS -->
     <title>Reveal Message</title>
     
-    <!-- Google Fonts - Modern, Clean Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     
-    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Telegram WebApp Script (optional - uncomment if needed) -->
-    <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
 </head>
 <body>
-    <!-- 
-        MAIN CONTAINER
-        This centers everything on the screen
-    -->
     <div class="container" id="container">
         
-        <!-- 
-            PARTICLE CANVAS
-            Background particle effects rendered here
-        -->
         <canvas id="particleCanvas"></canvas>
         
-        <!-- 
-            MESSAGE WRAPPER
-            Contains the central interactive message
-        -->
         <div class="message-wrapper" id="messageWrapper">
             
-            <!-- 
-                INSTRUCTION TEXT
-                Shows before message is revealed
-                CUSTOMIZE: Change the instruction text below
-            -->
             <div class="instruction" id="instruction">
                 Tap to reveal
             </div>
             
-            <!-- 
-                MAIN MESSAGE
-                The big central message that gets revealed
-                CUSTOMIZE: Change your message here
-            -->
             <h1 class="message" id="message">
                 Hello, World!
             </h1>
             
-            <!-- 
-                SUBTITLE (Optional)
-                Additional text shown after reveal
-                CUSTOMIZE: Change or remove this subtitle
-            -->
             <p class="subtitle" id="subtitle">
                 Welcome to something special
             </p>
             
         </div>
         
-        <!-- 
-            HINT TEXT
-            Small text at bottom suggesting interaction
-        -->
         <div class="hint" id="hint">
             Click anywhere to continue
         </div>
         
     </div>
     
-    <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
