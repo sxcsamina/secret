@@ -51,20 +51,24 @@ class Particle {
         this.x = x || Math.random() * canvas.width;
         this.y = y || Math.random() * canvas.height;
         this.size = burst ? Math.random() * 3 + 1 : CONFIG.particles.size;
-        this.speedX = (Math.random() - 0.5) * (burst ? 2 : CONFIG.particles.maxSpeed);
-        this.speedY = (Math.random() - 0.5) * (burst ? 2 : CONFIG.particles.maxSpeed);
+        this.speedX = (Math.random() - 0.5) * (burst ? 3 : CONFIG.particles.maxSpeed);
+        this.speedY = (Math.random() - 0.5) * (burst ? 3 : CONFIG.particles.maxSpeed);
         this.opacity = burst ? 1 : Math.random() * 0.5 + 0.3;
         this.life = burst ? 1 : 1;
-        this.decay = burst ? 0.02 : 0;
+        this.decay = burst ? 0.015 : 0;
+        this.friction = 0.96;
     }
     
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
         
+        this.speedX *= this.friction;
+        this.speedY *= this.friction;
+        
         if (this.decay > 0) {
             this.life -= this.decay;
-            this.opacity = this.life;
+            this.opacity = Math.max(0, this.life);
         }
         
         if (this.x > canvas.width) this.x = 0;
@@ -143,14 +147,27 @@ function revealMessage() {
 
 
 function handleInteraction(e) {
-    revealMessage();
+    if (!isRevealed) {
+        revealMessage();
+    }
+    
+    let x = canvas.width / 2;
+    let y = canvas.height / 2;
+    
+    if (e.touches) {
+        x = e.touches[0].clientX;
+        y = e.touches[0].clientY;
+    } else if (e.clientX !== undefined) {
+        x = e.clientX;
+        y = e.clientY;
+    }
+    
+    createParticleBurst(x, y);
     
     container.classList.add('active');
     setTimeout(() => {
         container.classList.remove('active');
     }, 100);
-    
-    createParticleBurst(canvas.width / 2, canvas.height / 2);
 }
 
 function handleKeyPress(e) {
